@@ -1,18 +1,26 @@
 <template>
   <div class="hello">
-    <v-text-field label="Name*" outlined v-model="test"></v-text-field>
+    <back-line></back-line>
+    <v-row>
+      <v-col cols="6">
+        <v-text-field label="Name*" outlined v-model="test"></v-text-field>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import BackLine from "@/components/Actions/BackLine";
 
-@Component({})
-class HelloWorld extends Vue {
+@Component({
+  components: { BackLine }
+})
+class PeruHomepage extends Vue {
   test = null;
 }
-export default HelloWorld;
+export default PeruHomepage;
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>

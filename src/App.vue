@@ -1,13 +1,21 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <v-app>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
-
+<script>
+export default {
+  name: "App",
+  created() {},
+  methods: {
+    gotToPeru() {
+      this.$router.push({ name: "peru-homepage" });
+    }
+  }
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
