@@ -13,12 +13,20 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "Home",
   components: {},
   methods: {
-    gotToPeru() {
-      this.$router.push({ name: "peru-homepage" });
+    ...mapActions({
+      getDataFile: "GET_DATA_FILE"
+    }),
+    async gotToPeru() {
+      console.log("mon cul");
+      await this.getDataFile();
+      console.log("mon cul");
+      await this.$router.push({ name: "peru-homepage" });
     }
   }
 };

@@ -8,12 +8,7 @@
 <script>
 export default {
   name: "App",
-  created() {},
-  methods: {
-    gotToPeru() {
-      this.$router.push({ name: "peru-homepage" });
-    }
-  }
+  created() {}
 };
 </script>
 <style>
