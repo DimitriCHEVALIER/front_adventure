@@ -27,6 +27,7 @@ const dataFile = {
     }
   },
   actions: {
+    /** Requete pour envoyer le fichier output */
     async GET_OUTPUT_FILE({ commit }, data) {
       const response = await Vue.axios.post(
         "https://127.0.0.1:8000/get_output_file",
@@ -35,6 +36,8 @@ const dataFile = {
       commit("SET_RESPONSE_OUTPUT", response);
       return response;
     },
+
+    /** Requete pour récupérer le fichier input demandé */
     async GET_DATA_FILE({ commit }) {
       let filename = LocalStorageUtils.getItem(LIST_KEYS.SELECTED_FILE);
       console.log(filename);
@@ -49,6 +52,8 @@ const dataFile = {
         commit("SET_DATA_MAP", response.data.map);
       }
     },
+
+    /** Requete pour récupérer tous les noms de fichiers input possible */
     async GET_ALL_FILES_NAMES({ commit }) {
       const response = await Vue.axios.get(
         "https://127.0.0.1:8000/get_list_input_file"

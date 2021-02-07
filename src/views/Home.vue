@@ -8,16 +8,19 @@
         Cette interface a pour but de générer une chasse aux trésors en Carbon.
         (AHAH)
         <br />
-        Le fichier d'aventure se trouve dans le projet back
-        (back_adventure/src/ressources/data/input/config-peru.txt)
+        Les fichier se trouvent dans le projet back
+        (back_adventure/src/ressources/data/input/). Placez les votres dans ce
+        dossier, actualisez, et selectionnez le dans le tableau ci dessous
         <br />
-        La fichier de résultat se trouvera également dans le projet back à la
-        fin de l'aventure.
-        (back_adventure/src/ressources/data/output/output_Adventure.txt)
+        Les fichiers de résultats se trouveront également dans le projet back à
+        la fin de l'aventure (back_adventure/src/ressources/data/output/).
+        L'output sera sous le formalisme 'output+nomfichierentrée'
         <br />
-        Vous pouvez les éditer autant que vous le souhaitez. Ensuite, lancez
-        l'application par ce bouton ou réactualisez votre page si vous êtes sur
-        le jeu.
+        Vous pouvez les éditer/ajouter autant que vous le souhaitez. Ensuite,
+        lancez l'application par ce bouton ou réactualisez votre page si vous
+        êtes sur le jeu. <br />
+        Le bouton ci dessous lancera le dernier fichier généré, ou le fichier de
+        démo si vous n'avez jamais utilisé l'application
       </v-col>
     </v-row>
     <v-row>

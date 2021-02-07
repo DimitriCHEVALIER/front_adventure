@@ -89,7 +89,6 @@ import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import CaseGame from "@/components/Peru/CaseGame";
 import { EventBus } from "@/eventBus";
-import JsonUtils from "@/Utils/JsonUtils";
 import LocalStorageUtils, { LIST_KEYS } from "@/Utils/LocalStorageUtils";
 
 @Component({
@@ -110,6 +109,10 @@ class PeruMap extends Vue {
   forceRerenderIndex = 0;
   isAdventureOver = false;
   loadingFichierGeneration = false;
+
+  /**
+   * Méthode d'appel pour la génération du fichier
+   * */
   async generateOutputFile() {
     this.loadingFichierGeneration = true;
     this.updateDataJoueurValues();
@@ -132,6 +135,9 @@ class PeruMap extends Vue {
     }
   }
 
+  /**
+   * Méthode de mise à jour de l'orientation des joueurs dans leur liste initiale
+   * */
   updateDataJoueurValues() {
     for (const joueur of this.dataJoueurs) {
       const mapValueJoueur = this.getPositionAndMove(joueur.id);
@@ -143,12 +149,14 @@ class PeruMap extends Vue {
     }
   }
 
+  /** Lance l'aventure automatiquement d'un coup */
   startAdventure() {
     while (!this.isAdventureOver) {
       this.playOneTurn();
     }
   }
 
+  /** Méthode principale pour que chacun des joueurs joue un tour*/
   playOneTurn() {
     let isThereANextTurn = false;
     for (const joueur of this.dataJoueurs) {
@@ -166,6 +174,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** Mouvement d'un joueur, partant de sa position dans le tableau */
   async handleMove(position) {
     if (!position.move) {
       return;
@@ -186,12 +195,14 @@ class PeruMap extends Vue {
     this.forceRerenderIndex++;
   }
 
+  /** Vérifier que l'utilisateur a l'autorisation de bouger à la case suivante */
   isNextBoxAvailable(nextCase) {
     return !nextCase.joueur && nextCase.type !== "MONTAGNE";
   }
 
+  /** Méthode appelée au moment de l'avancement d'un joueur. On se base sur son orientation pour définir sa case suivante */
   moveAventurier(position) {
-    const joueur = JsonUtils.clone(this.dataMap[position.x][position.y].joueur);
+    const joueur = this.dataMap[position.x][position.y].joueur;
 
     switch (this.dataMap[position.x][position.y].joueur.orientation) {
       case "E":
@@ -243,6 +254,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** Lorsque le joueur arrive sur une nouvelle case, on regarde si il a pu ramasser un trésor */
   getTheTreasure(box) {
     if (box.nbr_tresors > 0) {
       let joueurInList = this.getJoueurInOriginalList(box.joueur.id);
@@ -257,6 +269,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** Méthode pour faire tourner un aventurier vers la droite. Son orientation uniquement change */
   handleRight(position) {
     switch (this.dataMap[position.x][position.y].joueur.orientation) {
       case "E":
@@ -280,6 +293,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** Méthode pour faire tourner un aventurier vers la gauche. Son orientation uniquement change */
   handleLeft(position) {
     switch (this.dataMap[position.x][position.y].joueur.orientation) {
       case "E":
@@ -303,6 +317,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** A partir d'un joueur dans la liste d'ordonnancement des joueurs, on récupère sa position et son prochain mouvement */
   getPositionAndMove(id) {
     for (const [i, ligne] of this.dataMap.entries()) {
       for (const [j, box] of ligne.entries()) {
@@ -317,6 +332,7 @@ class PeruMap extends Vue {
     }
   }
 
+  /** A partir d'un id, récupération d'un joueur dans sa liste originale */
   getJoueurInOriginalList(id) {
     for (const joueur of this.dataJoueurs) {
       if (joueur.id === id) {

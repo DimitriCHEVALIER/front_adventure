@@ -42,8 +42,11 @@ import { mapGetters } from "vuex";
   }
 })
 class CaseGame extends Vue {
+  // Type de la case, montagne, plaine ou trésor
   @Prop({ type: String, default: "link" }) typeImage;
+  // nombre de trésor actuellement sur la case
   @Prop({ type: Number, default: 0 }) nbr_tresors;
+  // joueur si existant sur la case
   @Prop({ type: Object, default: null }) joueur;
 }
 export default CaseGame;
