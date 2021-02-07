@@ -1,14 +1,35 @@
 <template>
   <v-app>
+    <v-snackbar :color="snackBarColor" v-model="displaySnackBar" top right>
+      <span v-html="snackBarText"></span>
+      <v-btn text @click="displaySnackBar = false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-snackbar>
     <v-main>
       <router-view />
     </v-main>
   </v-app>
 </template>
 <script>
+import { EventBus } from "@/eventBus";
+
 export default {
   name: "App",
-  created() {}
+  created() {
+    EventBus.$on("showSnackBar", data => {
+      this.displaySnackBar = true;
+      this.snackBarColor = data.type;
+      this.snackBarText = data.message;
+    });
+  },
+  data: function() {
+    return {
+      snackBarColor: "error",
+      snackBarText: "I don't have any message for you :(",
+      displaySnackBar: false
+    };
+  }
 };
 </script>
 <style>

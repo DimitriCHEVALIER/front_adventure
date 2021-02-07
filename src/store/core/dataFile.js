@@ -27,7 +27,7 @@ const dataFile = {
         data
       );
       commit("SET_RESPONSE_OUTPUT", response);
-      console.log(response);
+      return response;
     },
     async GET_DATA_FILE({ commit }) {
       const response = await Vue.axios.get(

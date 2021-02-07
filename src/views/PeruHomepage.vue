@@ -2,9 +2,7 @@
   <div class="hello">
     <back-line></back-line>
     <v-row>
-      <v-col cols="6">
-        <peru-map></peru-map>
-      </v-col>
+      <peru-map></peru-map>
     </v-row>
   </div>
 </template>
@@ -35,7 +33,6 @@ class PeruHomepage extends Vue {
   async created() {
     if (!this.dataMap || !this.dataJoueurs) {
       await this.getDataFile();
-      console.log(this.dataMap);
     }
   }
 }

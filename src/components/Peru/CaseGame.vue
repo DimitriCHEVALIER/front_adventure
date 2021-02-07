@@ -20,8 +20,8 @@
         </v-overlay>
       </v-fade-transition>
     </v-img>
-    <span v-if="nbrTresors > 0">
-      <span v-for="i in nbrTresors" :key="i">
+    <span v-if="nbr_tresors > 0">
+      <span v-for="i in nbr_tresors" :key="i">
         o
       </span>
     </span>
@@ -43,7 +43,7 @@ import { mapGetters } from "vuex";
 })
 class CaseGame extends Vue {
   @Prop({ type: String, default: "link" }) typeImage;
-  @Prop({ type: Number, default: 0 }) nbrTresors;
+  @Prop({ type: Number, default: 0 }) nbr_tresors;
   @Prop({ type: Object, default: null }) joueur;
 }
 export default CaseGame;

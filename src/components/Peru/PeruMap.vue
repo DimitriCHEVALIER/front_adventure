@@ -1,65 +1,85 @@
 <template>
   <v-container fluid class="text-center">
-    <v-row align="center" justify="center">
-      <v-col>
-        <h1>
-          Bonjour! Voici l'aventure de
-          <span
-            v-for="(joueur, index) in dataJoueurs"
-            :key="'joueurs_' + index"
+    <div v-if="!dataMap" class="center-screen">
+      <v-progress-circular
+        indeterminate
+        :size="70"
+        :width="7"
+        color="primary"
+      ></v-progress-circular>
+    </div>
+    <div v-if="dataMap">
+      <v-row align="center" justify="center">
+        <v-col>
+          <h1>
+            Bonjour! Voici l'aventure de
+            <span
+              v-for="(joueur, index) in dataJoueurs"
+              :key="'joueurs_' + index"
+            >
+              {{ joueur.nom }}
+              <span v-if="index < dataJoueurs.length - 1">, </span>
+            </span>
+          </h1>
+          <v-row>
+            <v-col md="4" offset-md="4">
+              <table class="text-center justify-center align-center">
+                <caption>
+                  <h2>The Jungle</h2>
+                </caption>
+                <tr v-for="(line, index) in dataMap" :key="index">
+                  <th
+                    scope="col"
+                    v-for="(box, indexBox) in line"
+                    :key="indexBox"
+                  >
+                    <case-game
+                      :typeImage="box.type"
+                      :joueur="box.joueur"
+                      :nbr_tresors="box.nbr_tresors"
+                    ></case-game>
+                    {{ box.joueur ? box.joueur.nom : "" }}
+                  </th>
+                </tr>
+              </table>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-btn
+            color="primary text-transform-none"
+            dark
+            rounded
+            class="my-2 text-transform-none"
+            @click="startAdventure"
+            v-if="!isAdventureOver"
           >
-            {{ joueur.nom }}
-            <span v-if="index < dataJoueurs.length - 1">, </span>
-          </span>
-        </h1>
-        <table class="text-center">
-          <caption>
-            <h2>The Jungle</h2>
-          </caption>
-          <tr v-for="(line, index) in dataMap" :key="index">
-            <th scope="col" v-for="(box, indexBox) in line" :key="indexBox">
-              <case-game
-                :typeImage="box.type"
-                :joueur="box.joueur"
-                :nbrTresors="box.nbrTresors"
-              ></case-game>
-              {{ box.joueur ? box.joueur.nom : "" }}
-            </th>
-          </tr>
-        </table>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-btn
-          color="primary text-transform-none"
-          dark
-          rounded
-          class="my-2 text-transform-none"
-          @click="startAdventure"
-        >
-          Démarer l'aventure
-        </v-btn>
-        <v-btn
-          color="primary text-transform-none"
-          dark
-          rounded
-          @click="playOneTurn"
-          v-if="!isAdventureOver"
-        >
-          Joueur un tour
-        </v-btn>
-        <v-btn
-          color="primary text-transform-none"
-          dark
-          rounded
-          @click="generateOutputFile"
-          v-if="isAdventureOver"
-        >
-          Générer le fichier de fin d'aventure
-        </v-btn>
-      </v-col>
-    </v-row>
+            Lancer une aventure rapide
+          </v-btn>
+          <v-btn
+            color="primary text-transform-none"
+            dark
+            rounded
+            @click="playOneTurn"
+            v-if="!isAdventureOver"
+          >
+            Jouer un tour
+          </v-btn>
+          <v-btn
+            color="primary text-transform-none"
+            dark
+            rounded
+            @click="generateOutputFile"
+            v-if="isAdventureOver"
+            :loading="loadingFichierGeneration"
+          >
+            Générer le fichier de fin d'aventure
+          </v-btn>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -68,7 +88,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import CaseGame from "@/components/Peru/CaseGame";
-import CinematicUtils from "@/Utils/CinematicUtils";
+import { EventBus } from "@/eventBus";
 
 @Component({
   components: { CaseGame },
@@ -86,13 +106,26 @@ import CinematicUtils from "@/Utils/CinematicUtils";
 })
 class PeruMap extends Vue {
   isAdventureOver = false;
-  generateOutputFile() {
-    console.log(this.dataJoueurs);
+  loadingFichierGeneration = false;
+  async generateOutputFile() {
+    this.loadingFichierGeneration = true;
     this.updateDataJoueurValues();
-    this.getOutputFile({
+    const response = await this.getOutputFile({
       map: this.dataMap,
       joueurs: this.dataJoueurs
     });
+    this.loadingFichierGeneration = false;
+    if (response.status === 200) {
+      EventBus.$emit("showSnackBar", {
+        message: "Le fichier a été généré sur le server",
+        type: "success"
+      });
+    } else {
+      EventBus.$emit("showSnackBar", {
+        message: "Echec de la génération du fichier",
+        type: "error"
+      });
+    }
   }
 
   updateDataJoueurValues() {
@@ -106,19 +139,9 @@ class PeruMap extends Vue {
     }
   }
 
-  async startAdventure() {
-    let isOver = false;
-    let antiblock = 3;
-    while (!isOver && antiblock > 0) {
-      for (const joueur of this.dataJoueurs) {
-        const position = this.getPosition(joueur.id);
-        this.dataMap[position.x][position.y].joueur.sequence = this.dataMap[
-          position.x
-        ][position.y].joueur.sequence.substring(1);
-        this.handleMove(position);
-      }
-      await CinematicUtils.sleep(1000);
-      antiblock--;
+  startAdventure() {
+    while (!this.isAdventureOver) {
+      this.playOneTurn();
     }
   }
 
@@ -217,11 +240,15 @@ class PeruMap extends Vue {
   }
 
   getTheTreasure(box) {
-    if (box.nbrTresors > 0) {
-      box.nbrTresors--;
+    if (box.nbr_tresors > 0) {
       let joueurInList = this.getJoueurInOriginalList(box.joueur.id);
       if (joueurInList) {
-        joueurInList.nbrTresors++;
+        box.nbr_tresors--;
+        joueurInList.nbr_tresors++;
+        EventBus.$emit("showSnackBar", {
+          message: joueurInList.nom + " a ramassé un trésor !",
+          type: "success"
+        });
       }
     }
   }
@@ -297,3 +324,13 @@ class PeruMap extends Vue {
 }
 export default PeruMap;
 </script>
+<style lang="scss">
+.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+</style>

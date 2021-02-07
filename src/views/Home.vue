@@ -6,6 +6,7 @@
       rounded
       class="my-2 text-transform-none"
       @click="gotToPeru"
+      :loading="loading"
     >
       Let's go to peru!
     </v-btn>
@@ -18,13 +19,20 @@ import { mapActions } from "vuex";
 export default {
   name: "Home",
   components: {},
+  data: function() {
+    return {
+      loading: false
+    };
+  },
   methods: {
     ...mapActions({
       getDataFile: "GET_DATA_FILE"
     }),
     async gotToPeru() {
+      this.loading = true;
       await this.getDataFile();
-      await this.$router.push({ name: "peru-homepage" });
+      this.loading = false;
+      this.$router.push({ name: "peru-homepage" });
     }
   }
 };
