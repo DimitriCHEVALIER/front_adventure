@@ -20,6 +20,17 @@
         le jeu.
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="6" v-if="listFiles.length > 0">
+        <v-data-table
+          :items="listFiles"
+          :headers="headers"
+          @click:row="select"
+          class="elevation-1"
+        >
+        </v-data-table>
+      </v-col>
+    </v-row>
     <v-btn
       color="primary text-transform-none"
       dark
@@ -34,26 +45,45 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import Vue from "vue";
+import { mapActions, mapGetters } from "vuex";
+import { Component } from "vue-property-decorator";
+import LocalStorageUtils, { LIST_KEYS } from "@/Utils/LocalStorageUtils";
 
-export default {
-  name: "Home",
-  components: {},
-  data: function() {
-    return {
-      loading: false
-    };
+@Component({
+  computed: {
+    ...mapGetters({
+      dataMap: "getDataMap",
+      dataJoueurs: "getDataJoueurs",
+      listFiles: "getListFiles"
+    })
   },
   methods: {
     ...mapActions({
-      getDataFile: "GET_DATA_FILE"
-    }),
-    async gotToPeru() {
-      this.loading = true;
-      await this.getDataFile();
-      this.loading = false;
-      this.$router.push({ name: "peru-homepage" });
-    }
+      getDataFile: "GET_DATA_FILE",
+      getAllFilesNames: "GET_ALL_FILES_NAMES"
+    })
   }
-};
+})
+class Home extends Vue {
+  headers = [{ text: "Nom de fichier", value: "name" }];
+  loading = false;
+  created() {
+    this.getAllFilesNames();
+  }
+
+  select(value) {
+    LocalStorageUtils.setItem(LIST_KEYS.SELECTED_FILE, value.name);
+    this.gotToPeru();
+    console.log(value);
+  }
+
+  async gotToPeru() {
+    this.loading = true;
+    await this.getDataFile();
+    this.loading = false;
+    this.$router.push({ name: "peru-homepage" });
+  }
+}
+export default Home;
 </script>

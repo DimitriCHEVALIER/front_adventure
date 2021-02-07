@@ -1,5 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import FilesMapper from "@/Mappers/FilesMapper";
+import LocalStorageUtils, { LIST_KEYS } from "@/Utils/LocalStorageUtils";
 
 Vue.use(Vuex);
 
@@ -7,7 +9,8 @@ const dataFile = {
   state: {
     dataJoueurs: [],
     dataMap: null,
-    responseOutput: null
+    responseOutput: null,
+    listFiles: []
   },
   mutations: {
     SET_DATA_MAP(state, data) {
@@ -18,6 +21,9 @@ const dataFile = {
     },
     SET_RESPONSE_OUTPUT(state, data) {
       state.responseOutput = data;
+    },
+    SET_LIST_FILES(state, data) {
+      state.listFiles = data;
     }
   },
   actions: {
@@ -30,18 +36,33 @@ const dataFile = {
       return response;
     },
     async GET_DATA_FILE({ commit }) {
+      let filename = LocalStorageUtils.getItem(LIST_KEYS.SELECTED_FILE);
+      console.log(filename);
+      if (!filename) {
+        filename = "config-peru.txt";
+      }
       const response = await Vue.axios.get(
-        "https://127.0.0.1:8000/get_input_file"
+        "https://127.0.0.1:8000/get_input_file/" + filename
       );
       if (response.status === 200) {
         commit("SET_DATA_JOUEURS", response.data.joueurs);
         commit("SET_DATA_MAP", response.data.map);
       }
+    },
+    async GET_ALL_FILES_NAMES({ commit }) {
+      const response = await Vue.axios.get(
+        "https://127.0.0.1:8000/get_list_input_file"
+      );
+      if (response.status === 200) {
+        commit("SET_LIST_FILES", FilesMapper.map(response.data));
+      }
+      return response;
     }
   },
   getters: {
     getDataJoueurs: state => state.dataJoueurs,
-    getDataMap: state => state.dataMap
+    getDataMap: state => state.dataMap,
+    getListFiles: state => state.listFiles
   }
 };
 

@@ -15,7 +15,7 @@
             Bonjour! Voici l'aventure de
             <span
               v-for="(joueur, index) in dataJoueurs"
-              :key="'joueurs_' + index"
+              :key="'joueurs_' + index + forceRerenderIndex"
             >
               {{ joueur.nom }}
               <span v-if="index < dataJoueurs.length - 1">, </span>
@@ -31,7 +31,7 @@
                   <th
                     scope="col"
                     v-for="(box, indexBox) in line"
-                    :key="indexBox"
+                    :key="indexBox + '_' + forceRerenderIndex"
                   >
                     <case-game
                       :typeImage="box.type"
@@ -89,6 +89,8 @@ import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import CaseGame from "@/components/Peru/CaseGame";
 import { EventBus } from "@/eventBus";
+import JsonUtils from "@/Utils/JsonUtils";
+import LocalStorageUtils, { LIST_KEYS } from "@/Utils/LocalStorageUtils";
 
 @Component({
   components: { CaseGame },
@@ -105,6 +107,7 @@ import { EventBus } from "@/eventBus";
   }
 })
 class PeruMap extends Vue {
+  forceRerenderIndex = 0;
   isAdventureOver = false;
   loadingFichierGeneration = false;
   async generateOutputFile() {
@@ -112,7 +115,8 @@ class PeruMap extends Vue {
     this.updateDataJoueurValues();
     const response = await this.getOutputFile({
       map: this.dataMap,
-      joueurs: this.dataJoueurs
+      joueurs: this.dataJoueurs,
+      filename: LocalStorageUtils.getItem(LIST_KEYS.SELECTED_FILE)
     });
     this.loadingFichierGeneration = false;
     if (response.status === 200) {
@@ -152,7 +156,6 @@ class PeruMap extends Vue {
       this.dataMap[position.x][position.y].joueur.sequence = this.dataMap[
         position.x
       ][position.y].joueur.sequence.substring(1);
-      console.log(this.dataMap[position.x][position.y].joueur.sequence);
       if (this.dataMap[position.x][position.y].joueur.sequence) {
         isThereANextTurn = true;
       }
@@ -163,7 +166,7 @@ class PeruMap extends Vue {
     }
   }
 
-  handleMove(position) {
+  async handleMove(position) {
     if (!position.move) {
       return;
     }
@@ -180,6 +183,7 @@ class PeruMap extends Vue {
       default:
         console.log(`Wrong move : ${position.move}.`);
     }
+    this.forceRerenderIndex++;
   }
 
   isNextBoxAvailable(nextCase) {
@@ -187,7 +191,7 @@ class PeruMap extends Vue {
   }
 
   moveAventurier(position) {
-    const joueur = this.dataMap[position.x][position.y].joueur;
+    const joueur = JsonUtils.clone(this.dataMap[position.x][position.y].joueur);
 
     switch (this.dataMap[position.x][position.y].joueur.orientation) {
       case "E":
