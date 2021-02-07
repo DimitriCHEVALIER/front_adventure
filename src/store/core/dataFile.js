@@ -34,7 +34,6 @@ const dataFile = {
         "https://127.0.0.1:8000/get_input_file"
       );
       if (response.status === 200) {
-        console.log(response);
         commit("SET_DATA_JOUEURS", response.data.joueurs);
         commit("SET_DATA_MAP", response.data.map);
       }

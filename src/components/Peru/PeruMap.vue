@@ -69,7 +69,6 @@ import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import CaseGame from "@/components/Peru/CaseGame";
 import CinematicUtils from "@/Utils/CinematicUtils";
-import JsonUtils from "@/Utils/JsonUtils";
 
 @Component({
   components: { CaseGame },
@@ -89,7 +88,22 @@ class PeruMap extends Vue {
   isAdventureOver = false;
   generateOutputFile() {
     console.log(this.dataJoueurs);
-    this.getOutputFile(this.dataJoueurs);
+    this.updateDataJoueurValues();
+    this.getOutputFile({
+      map: this.dataMap,
+      joueurs: this.dataJoueurs
+    });
+  }
+
+  updateDataJoueurValues() {
+    for (const joueur of this.dataJoueurs) {
+      const mapValueJoueur = this.getPositionAndMove(joueur.id);
+      if (mapValueJoueur) {
+        joueur.orientation = this.dataMap[mapValueJoueur.x][
+          mapValueJoueur.y
+        ].joueur.orientation;
+      }
+    }
   }
 
   async startAdventure() {
@@ -103,7 +117,6 @@ class PeruMap extends Vue {
         ][position.y].joueur.sequence.substring(1);
         this.handleMove(position);
       }
-      console.log(JsonUtils.clone(this.dataMap));
       await CinematicUtils.sleep(1000);
       antiblock--;
     }
