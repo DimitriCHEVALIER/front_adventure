@@ -1,5 +1,25 @@
 <template>
-  <div class="home">
+  <v-container class="home">
+    <h1>
+      Bienvenue dans la chasse aux trésors!
+    </h1>
+    <v-row>
+      <v-col>
+        Cette interface a pour but de générer une chasse aux trésors en Carbon.
+        (AHAH)
+        <br />
+        Le fichier d'aventure se trouve dans le projet back
+        (back_adventure/src/ressources/data/input/config-peru.txt)
+        <br />
+        La fichier de résultat se trouvera également dans le projet back à la
+        fin de l'aventure.
+        (back_adventure/src/ressources/data/output/output_Adventure.txt)
+        <br />
+        Vous pouvez les éditer autant que vous le souhaitez. Ensuite, lancez
+        l'application par ce bouton ou réactualisez votre page si vous êtes sur
+        le jeu.
+      </v-col>
+    </v-row>
     <v-btn
       color="primary text-transform-none"
       dark
@@ -10,7 +30,7 @@
     >
       Let's go to peru!
     </v-btn>
-  </div>
+  </v-container>
 </template>
 
 <script>

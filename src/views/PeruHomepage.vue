@@ -31,9 +31,7 @@ import { mapActions, mapGetters } from "vuex";
 class PeruHomepage extends Vue {
   test = null;
   async created() {
-    if (!this.dataMap || !this.dataJoueurs) {
-      await this.getDataFile();
-    }
+    await this.getDataFile();
   }
 }
 export default PeruHomepage;
