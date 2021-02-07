@@ -23,9 +23,7 @@ export default {
       getDataFile: "GET_DATA_FILE"
     }),
     async gotToPeru() {
-      console.log("mon cul");
       await this.getDataFile();
-      console.log("mon cul");
       await this.$router.push({ name: "peru-homepage" });
     }
   }

@@ -3,7 +3,7 @@
     <back-line></back-line>
     <v-row>
       <v-col cols="6">
-        <v-text-field label="Name*" outlined v-model="test"></v-text-field>
+        <peru-map></peru-map>
       </v-col>
     </v-row>
   </div>
@@ -13,29 +13,31 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import BackLine from "@/components/Actions/BackLine";
+import PeruMap from "@/components/Peru/PeruMap";
+import { mapActions, mapGetters } from "vuex";
 
 @Component({
-  components: { BackLine }
+  components: { BackLine, PeruMap },
+  computed: {
+    ...mapGetters({
+      dataMap: "getDataMap",
+      dataJoueurs: "getDataJoueurs"
+    })
+  },
+  methods: {
+    ...mapActions({
+      getDataFile: "GET_DATA_FILE"
+    })
+  }
 })
 class PeruHomepage extends Vue {
   test = null;
+  async created() {
+    if (!this.dataMap || !this.dataJoueurs) {
+      await this.getDataFile();
+      console.log(this.dataMap);
+    }
+  }
 }
 export default PeruHomepage;
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
