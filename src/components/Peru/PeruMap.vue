@@ -15,17 +15,64 @@
             Bonjour! Voici l'aventure de
             <span
               v-for="(joueur, index) in dataJoueurs"
-              :key="'joueurs_' + index + forceRerenderIndex"
+              :key="'joueurs_' + index"
             >
               {{ joueur.nom }}
               <span v-if="index < dataJoueurs.length - 1">, </span>
             </span>
           </h1>
+        </v-col>
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-col cols="3">
           <v-row>
-            <v-col md="4" offset-md="4">
-              <table class="text-center justify-center align-center">
+            <v-col>
+              <v-btn
+                color="primary text-transform-none"
+                dark
+                rounded
+                class="my-2 text-transform-none"
+                @click="startAdventure"
+                v-if="!isAdventureOver"
+              >
+                Lancer une aventure rapide
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-btn
+                color="primary text-transform-none"
+                dark
+                rounded
+                @click="playOneTurn"
+                v-if="!isAdventureOver"
+              >
+                Jouer un tour
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-btn
+                color="primary text-transform-none"
+                dark
+                rounded
+                @click="generateOutputFile"
+                v-if="isAdventureOver"
+                :loading="loadingFichierGeneration"
+              >
+                Générer le fichier de fin d'aventure
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="9">
+          <v-row>
+            <v-col>
+              <table class="table-game elevation-9">
                 <caption>
-                  <h2>The Jungle</h2>
+                  <h2>Plateau des Andes</h2>
                 </caption>
                 <tr v-for="(line, index) in dataMap" :key="index">
                   <th
@@ -44,39 +91,6 @@
               </table>
             </v-col>
           </v-row>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn
-            color="primary text-transform-none"
-            dark
-            rounded
-            class="my-2 text-transform-none"
-            @click="startAdventure"
-            v-if="!isAdventureOver"
-          >
-            Lancer une aventure rapide
-          </v-btn>
-          <v-btn
-            color="primary text-transform-none"
-            dark
-            rounded
-            @click="playOneTurn"
-            v-if="!isAdventureOver"
-          >
-            Jouer un tour
-          </v-btn>
-          <v-btn
-            color="primary text-transform-none"
-            dark
-            rounded
-            @click="generateOutputFile"
-            v-if="isAdventureOver"
-            :loading="loadingFichierGeneration"
-          >
-            Générer le fichier de fin d'aventure
-          </v-btn>
         </v-col>
       </v-row>
     </div>
@@ -179,6 +193,7 @@ class PeruMap extends Vue {
     if (!position.move) {
       return;
     }
+    this.forceRerenderIndex++;
     switch (position.move) {
       case "A":
         this.moveAventurier(position);
@@ -192,7 +207,6 @@ class PeruMap extends Vue {
       default:
         console.log(`Wrong move : ${position.move}.`);
     }
-    this.forceRerenderIndex++;
   }
 
   /** Vérifier que l'utilisateur a l'autorisation de bouger à la case suivante */
@@ -352,5 +366,8 @@ export default PeruMap;
   align-items: center;
   text-align: center;
   min-height: 100vh;
+}
+.table-game {
+  border: black solid 2px;
 }
 </style>

@@ -5,7 +5,7 @@
     </h1>
     <v-row>
       <v-col>
-        Cette interface a pour but de générer une chasse aux trésors en Carbon.
+        Cette interface a pour but de générer une chasse aux trésors de Carbon.
         (AHAH)
         <br />
         Les fichier se trouvent dans le projet back
@@ -14,7 +14,7 @@
         <br />
         Les fichiers de résultats se trouveront également dans le projet back à
         la fin de l'aventure (back_adventure/src/ressources/data/output/).
-        L'output sera sous le formalisme 'output+nomfichierentrée'
+        L'output sera sous le formalisme 'output_+nomfichierentrée'
         <br />
         Vous pouvez les éditer/ajouter autant que vous le souhaitez. Ensuite,
         lancez l'application par ce bouton ou réactualisez votre page si vous
@@ -23,15 +23,27 @@
         démo si vous n'avez jamais utilisé l'application
       </v-col>
     </v-row>
-    <v-row>
+    <v-row align="center" justify="center">
       <v-col cols="6" v-if="listFiles.length > 0">
-        <v-data-table
-          :items="listFiles"
-          :headers="headers"
-          @click:row="select"
-          class="elevation-1"
-        >
-        </v-data-table>
+        <v-slide-x-transition appear>
+          <v-data-table
+            :items="listFiles"
+            :headers="headers"
+            @click:row="select"
+            class="elevation-1 row-pointer"
+          >
+          </v-data-table>
+        </v-slide-x-transition>
+      </v-col>
+      <v-col v-else>
+        <div class="center-screen">
+          <v-progress-circular
+            indeterminate
+            :size="70"
+            :width="7"
+            color="primary"
+          ></v-progress-circular>
+        </div>
       </v-col>
     </v-row>
     <v-btn
@@ -78,7 +90,6 @@ class Home extends Vue {
   select(value) {
     LocalStorageUtils.setItem(LIST_KEYS.SELECTED_FILE, value.name);
     this.gotToPeru();
-    console.log(value);
   }
 
   async gotToPeru() {
@@ -90,3 +101,8 @@ class Home extends Vue {
 }
 export default Home;
 </script>
+<style lang="css" scoped>
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
+}
+</style>

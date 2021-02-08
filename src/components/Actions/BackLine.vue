@@ -1,10 +1,14 @@
 <template>
-  <v-row class="line-back">
-    <v-col @click="back">
-      <v-icon>mdi-chevron-left</v-icon> Back
-      <v-divider></v-divider>
-    </v-col>
-  </v-row>
+  <v-container>
+    <v-row class="line-back">
+      <v-col cols="1">
+        <v-btn text class="" @click="back">
+          <v-icon>mdi-chevron-left</v-icon> Retour
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-divider></v-divider>
+  </v-container>
 </template>
 
 <script>

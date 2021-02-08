@@ -1,10 +1,12 @@
 <template>
-  <div class="hello">
+  <v-container fluid>
     <back-line></back-line>
     <v-row>
-      <peru-map></peru-map>
+      <v-slide-x-transition appear>
+        <peru-map></peru-map>
+      </v-slide-x-transition>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>

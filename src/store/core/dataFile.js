@@ -29,10 +29,7 @@ const dataFile = {
   actions: {
     /** Requete pour envoyer le fichier output */
     async GET_OUTPUT_FILE({ commit }, data) {
-      const response = await Vue.axios.post(
-        "https://127.0.0.1:8000/get_output_file",
-        data
-      );
+      const response = await Vue.axios.post("/get_output_file", data);
       commit("SET_RESPONSE_OUTPUT", response);
       return response;
     },
@@ -40,13 +37,10 @@ const dataFile = {
     /** Requete pour récupérer le fichier input demandé */
     async GET_DATA_FILE({ commit }) {
       let filename = LocalStorageUtils.getItem(LIST_KEYS.SELECTED_FILE);
-      console.log(filename);
       if (!filename) {
-        filename = "config-peru.txt";
+        filename = "demo.txt";
       }
-      const response = await Vue.axios.get(
-        "https://127.0.0.1:8000/get_input_file/" + filename
-      );
+      const response = await Vue.axios.get("/get_input_file/" + filename);
       if (response.status === 200) {
         commit("SET_DATA_JOUEURS", response.data.joueurs);
         commit("SET_DATA_MAP", response.data.map);
@@ -55,9 +49,7 @@ const dataFile = {
 
     /** Requete pour récupérer tous les noms de fichiers input possible */
     async GET_ALL_FILES_NAMES({ commit }) {
-      const response = await Vue.axios.get(
-        "https://127.0.0.1:8000/get_list_input_file"
-      );
+      const response = await Vue.axios.get("/get_list_input_file");
       if (response.status === 200) {
         commit("SET_LIST_FILES", FilesMapper.map(response.data));
       }
