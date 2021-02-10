@@ -45,6 +45,7 @@ const dataFile = {
         commit("SET_DATA_JOUEURS", response.data.joueurs);
         commit("SET_DATA_MAP", response.data.map);
       }
+      return response;
     },
 
     /** Requete pour récupérer tous les noms de fichiers input possible */

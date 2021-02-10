@@ -8,7 +8,7 @@
         Cette interface a pour but de générer une chasse aux trésors de Carbon.
         (AHAH)
         <br />
-        Les fichier se trouvent dans le projet back
+        Les fichier seinter trouvent dans le projet back
         (back_adventure/src/ressources/data/input/). Placez les votres dans ce
         dossier, actualisez, et selectionnez le dans le tableau ci dessous
         <br />
@@ -94,9 +94,11 @@ class Home extends Vue {
 
   async gotToPeru() {
     this.loading = true;
-    await this.getDataFile();
+    const response = await this.getDataFile();
     this.loading = false;
-    this.$router.push({ name: "peru-homepage" });
+    if (response && response.status === 200) {
+      this.$router.push({ name: "peru-homepage" });
+    }
   }
 }
 export default Home;

@@ -2,6 +2,7 @@
 
 import Vue from "vue";
 import axios from "axios";
+import { EventBus } from "@/eventBus";
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -36,7 +37,12 @@ _axios.interceptors.response.use(
   },
   function(error) {
     // Do something with response error
-    return Promise.reject(error);
+    EventBus.$emit("showSnackBar", {
+      message:
+        error && error.response ? error.response.data : "Serveur indisponible",
+      type: "error"
+    });
+    return error;
   }
 );
 
