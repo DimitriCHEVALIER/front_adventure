@@ -104,6 +104,7 @@ import { mapActions, mapGetters } from "vuex";
 import CaseGame from "@/components/Peru/CaseGame";
 import { EventBus } from "@/eventBus";
 import LocalStorageUtils, { LIST_KEYS } from "@/Utils/LocalStorageUtils";
+import AdventureGameUtils from "@/Utils/AdventureGameUtils";
 
 @Component({
   components: { CaseGame },
@@ -154,7 +155,10 @@ class PeruMap extends Vue {
    * */
   updateDataJoueurValues() {
     for (const joueur of this.dataJoueurs) {
-      const mapValueJoueur = this.getPositionAndMove(joueur.id);
+      const mapValueJoueur = AdventureGameUtils.getPositionAndMove(
+        joueur.id,
+        this.dataMap
+      );
       if (mapValueJoueur) {
         joueur.orientation = this.dataMap[mapValueJoueur.x][
           mapValueJoueur.y
@@ -174,7 +178,10 @@ class PeruMap extends Vue {
   playOneTurn() {
     let isThereANextTurn = false;
     for (const joueur of this.dataJoueurs) {
-      const position = this.getPositionAndMove(joueur.id);
+      const position = AdventureGameUtils.getPositionAndMove(
+        joueur.id,
+        this.dataMap
+      );
       this.dataMap[position.x][position.y].joueur.sequence = this.dataMap[
         position.x
       ][position.y].joueur.sequence.substring(1);
@@ -196,164 +203,21 @@ class PeruMap extends Vue {
     this.forceRerenderIndex++;
     switch (position.move) {
       case "A":
-        this.moveAventurier(position);
+        AdventureGameUtils.moveAventurier(
+          position,
+          this.dataMap,
+          this.dataJoueurs
+        );
         break;
       case "G":
-        this.handleLeft(position);
+        AdventureGameUtils.handleLeft(position, this.dataMap);
         break;
       case "D":
-        this.handleRight(position);
+        AdventureGameUtils.handleRight(position, this.dataMap);
         break;
       default:
         console.log(`Wrong move : ${position.move}.`);
     }
-  }
-
-  /** Vérifier que l'utilisateur a l'autorisation de bouger à la case suivante */
-  isNextBoxAvailable(nextCase) {
-    return !nextCase.joueur && nextCase.type !== "MONTAGNE";
-  }
-
-  /** Méthode appelée au moment de l'avancement d'un joueur. On se base sur son orientation pour définir sa case suivante */
-  moveAventurier(position) {
-    const joueur = this.dataMap[position.x][position.y].joueur;
-
-    switch (this.dataMap[position.x][position.y].joueur.orientation) {
-      case "E":
-        if (
-          position.y + 1 < this.dataMap[position.x].length &&
-          this.isNextBoxAvailable(this.dataMap[position.x][position.y + 1])
-        ) {
-          this.dataMap[position.x][position.y + 1].joueur = joueur;
-          this.dataMap[position.x][position.y].joueur = null;
-          this.getTheTreasure(this.dataMap[position.x][position.y + 1]);
-        }
-        break;
-      case "N":
-        if (
-          position.x - 1 >= 0 &&
-          this.isNextBoxAvailable(this.dataMap[position.x - 1][position.y])
-        ) {
-          this.dataMap[position.x - 1][position.y].joueur = joueur;
-          this.dataMap[position.x][position.y].joueur = null;
-          this.getTheTreasure(this.dataMap[position.x - 1][position.y]);
-        }
-        break;
-      case "S":
-        if (
-          position.x + 1 < this.dataMap.length &&
-          this.isNextBoxAvailable(this.dataMap[position.x + 1][position.y])
-        ) {
-          this.dataMap[position.x + 1][position.y].joueur = joueur;
-          this.dataMap[position.x][position.y].joueur = null;
-          this.getTheTreasure(this.dataMap[position.x + 1][position.y]);
-        }
-        break;
-      case "O":
-        if (
-          position.y - 1 >= 0 &&
-          this.isNextBoxAvailable(this.dataMap[position.x][position.y - 1])
-        ) {
-          this.dataMap[position.x][position.y - 1].joueur = joueur;
-          this.dataMap[position.x][position.y].joueur = null;
-          this.getTheTreasure(this.dataMap[position.x][position.y - 1]);
-        }
-        break;
-      default:
-        console.log(
-          `Wrong position M : ${
-            this.dataMap[position.x][position.y].joueur.orientation
-          }.`
-        );
-    }
-  }
-
-  /** Lorsque le joueur arrive sur une nouvelle case, on regarde si il a pu ramasser un trésor */
-  getTheTreasure(box) {
-    if (box.nbr_tresors > 0) {
-      let joueurInList = this.getJoueurInOriginalList(box.joueur.id);
-      if (joueurInList) {
-        box.nbr_tresors--;
-        joueurInList.nbr_tresors++;
-        EventBus.$emit("showSnackBar", {
-          message: joueurInList.nom + " a ramassé un trésor !",
-          type: "success"
-        });
-      }
-    }
-  }
-
-  /** Méthode pour faire tourner un aventurier vers la droite. Son orientation uniquement change */
-  handleRight(position) {
-    switch (this.dataMap[position.x][position.y].joueur.orientation) {
-      case "E":
-        this.dataMap[position.x][position.y].joueur.orientation = "S";
-        break;
-      case "S":
-        this.dataMap[position.x][position.y].joueur.orientation = "O";
-        break;
-      case "O":
-        this.dataMap[position.x][position.y].joueur.orientation = "N";
-        break;
-      case "N":
-        this.dataMap[position.x][position.y].joueur.orientation = "E";
-        break;
-      default:
-        console.log(
-          `Wrong position R : ${
-            this.dataMap[position.x][position.y].joueur.orientation
-          }.`
-        );
-    }
-  }
-
-  /** Méthode pour faire tourner un aventurier vers la gauche. Son orientation uniquement change */
-  handleLeft(position) {
-    switch (this.dataMap[position.x][position.y].joueur.orientation) {
-      case "E":
-        this.dataMap[position.x][position.y].joueur.orientation = "N";
-        break;
-      case "S":
-        this.dataMap[position.x][position.y].joueur.orientation = "E";
-        break;
-      case "O":
-        this.dataMap[position.x][position.y].joueur.orientation = "S";
-        break;
-      case "N":
-        this.dataMap[position.x][position.y].joueur.orientation = "O";
-        break;
-      default:
-        console.log(
-          `Wrong position L : ${
-            this.dataMap[position.x][position.y].joueur.orientation
-          }.`
-        );
-    }
-  }
-
-  /** A partir d'un joueur dans la liste d'ordonnancement des joueurs, on récupère sa position et son prochain mouvement */
-  getPositionAndMove(id) {
-    for (const [i, ligne] of this.dataMap.entries()) {
-      for (const [j, box] of ligne.entries()) {
-        if (box && box.joueur && box.joueur.id === id) {
-          return {
-            x: i,
-            y: j,
-            move: box.joueur.sequence.substr(0, 1)
-          };
-        }
-      }
-    }
-  }
-
-  /** A partir d'un id, récupération d'un joueur dans sa liste originale */
-  getJoueurInOriginalList(id) {
-    for (const joueur of this.dataJoueurs) {
-      if (joueur.id === id) {
-        return joueur;
-      }
-    }
-    return null;
   }
 }
 export default PeruMap;
