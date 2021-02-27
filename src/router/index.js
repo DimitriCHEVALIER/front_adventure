@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import HomeCrypto from "../views/HomeCrypto.vue";
 import PeruHomepage from "../views/PeruHomepage.vue";
+import Plateforme from "../views/Plateforme.vue";
 
 Vue.use(VueRouter);
 
@@ -9,7 +10,12 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: HomeCrypto
+  },
+  {
+    path: "/plateforme",
+    name: "plateforme",
+    component: Plateforme
   },
   {
     path: "/peru-homepage",
