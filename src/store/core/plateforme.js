@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
-const dataFile = {
+const plateforme = {
   state: {
     plateformes: [],
     plateforme: null,
@@ -30,6 +30,7 @@ const dataFile = {
     async getPlateforme({ commit }, code) {
       const response = await Vue.axios.get("/get_plateforme/" + code);
       commit("SET_PLATEFORME", response.data);
+      console.log(response.data);
       return response;
     },
 
@@ -47,4 +48,4 @@ const dataFile = {
   }
 };
 
-export default dataFile;
+export default plateforme;

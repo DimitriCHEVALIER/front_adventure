@@ -51,7 +51,7 @@ class Home extends Vue {
   headers = [
     { text: "Nom de plateforme", value: "name" },
     { text: "Token", value: "code" },
-    { text: "Valeure investissement", value: "amount_investment" }
+    { text: "Valeure investissement", value: "amountInvestment" }
   ];
   created() {
     this.getAllPlateformes();

@@ -1,5 +1,6 @@
 <template>
-  <v-container class="home">
+  <v-container fluid class="pa-5">
+    <back-line> </back-line>
     <v-card>
       <v-row>
         <div class="float-left">
@@ -16,9 +17,13 @@
               <v-list-item link>
                 <v-list-item-content>
                   <v-list-item-title class="title">
-                    Crypto.com
+                    {{ plateforme ? plateforme.name : "" }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>CRO</v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    {{
+                      plateforme ? plateforme.code : ""
+                    }}</v-list-item-subtitle
+                  >
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -38,10 +43,16 @@
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter un ordre</v-list-item-title>
               </v-list-item>
+              <v-list-item @click="currentComponent = 'create-currency'">
+                <v-list-item-icon>
+                  <v-icon>mdi-newspaper</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Ajouter une devise</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-navigation-drawer>
         </div>
-        <div class="float-left pa-3" style="width: 100%">
+        <div class="float-left pa-3" style="width: 72%">
           <component v-bind:is="currentComponent" />
         </div>
       </v-row>
@@ -55,11 +66,15 @@ import { mapActions, mapGetters } from "vuex";
 import { Component } from "vue-property-decorator";
 import Wallet from "@/components/Crypto/Wallet";
 import CreateOrder from "@/components/Crypto/CreateOrder";
+import BackLine from "@/components/Actions/BackLine";
+import CreateCurrency from "@/components/Crypto/CreateCurrency";
 
 @Component({
   components: {
     Wallet,
-    CreateOrder
+    CreateOrder,
+    BackLine,
+    CreateCurrency
   },
   computed: {
     ...mapGetters({
