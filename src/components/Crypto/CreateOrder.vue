@@ -34,7 +34,6 @@
                 (order.selectedFrom ? 'in ' + order.selectedFrom : '')}`
             "
             outlined
-            :rules="[rules.required, rules.numericRule]"
             v-model.number="order.amountFistCurrency"
           ></v-text-field>
         </v-col>
@@ -69,7 +68,6 @@
                   : '')}`
             "
             outlined
-            :rules="[rules.required, rules.numericRule]"
             v-model="taux"
             disabled
           ></v-text-field>
@@ -156,7 +154,7 @@ class CreateOrder extends Vue {
       const response = await this.createOrder(this.order);
       if (response && response.status === 200) {
         EventBus.$emit("showSnackBar", {
-          message: "La crypto " + this.nom + " a bien été ajoutée!",
+          message: "L'ordre a été ajouté avec succès'!",
           type: "success"
         });
       }

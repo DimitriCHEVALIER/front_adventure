@@ -49,6 +49,12 @@
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter une devise</v-list-item-title>
               </v-list-item>
+              <v-list-item @click="currentComponent = 'show-currencies'">
+                <v-list-item-icon>
+                  <v-icon>mdi-newspaper</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Voir les devises</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-navigation-drawer>
         </div>
@@ -68,13 +74,15 @@ import Wallet from "@/components/Crypto/Wallet";
 import CreateOrder from "@/components/Crypto/CreateOrder";
 import BackLine from "@/components/Actions/BackLine";
 import CreateCurrency from "@/components/Crypto/CreateCurrency";
+import ShowCurrencies from "@/components/Crypto/ShowCurrencies";
 
 @Component({
   components: {
     Wallet,
     CreateOrder,
     BackLine,
-    CreateCurrency
+    CreateCurrency,
+    ShowCurrencies
   },
   computed: {
     ...mapGetters({

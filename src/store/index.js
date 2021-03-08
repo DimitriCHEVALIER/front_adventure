@@ -4,6 +4,7 @@ import dataFile from "./core/dataFile";
 import plateforme from "./core/plateforme";
 import currency from "./core/currency";
 import order from "./core/order";
+import ownedCrypto from "./core/ownedCrypto";
 
 Vue.use(Vuex);
 
@@ -12,6 +13,7 @@ export default new Vuex.Store({
     dataFile,
     plateforme,
     currency,
-    order
+    order,
+    ownedCrypto
   }
 });
