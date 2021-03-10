@@ -1,8 +1,21 @@
 <template>
   <v-container fluid>
-    <h1>
+    <h1 class="mb-4">
       Voir les cryptos sur la plateforme
     </h1>
+    <v-row align="end" justify="end">
+      <v-col>
+        <v-btn
+          color="primary text-transform-none"
+          dark
+          rounded
+          @click="refreshCoinGecko"
+          :loading="loadingCoinGecko"
+        >
+          Rafraichir les données de CoinGecko
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-data-table
       :headers="headers"
       :items="ownedCryptos"
@@ -17,10 +30,9 @@
         </div>
       </template>
       <template v-slot:item.actualChange="{ item }">
-        <v-text-field
-          outlined
-          v-model.number="item.actualChange"
-        ></v-text-field>
+        <div>
+          {{ getValueCoinGecko(item) }}
+        </div>
       </template>
       <template v-slot:item.multi="{ item }">
         <div v-if="item.actualChange">
@@ -55,12 +67,14 @@ import { mapActions, mapGetters } from "vuex";
   computed: {
     ...mapGetters({
       plateforme: "getPlateforme",
-      ownedCryptos: "getOwnedCryptos"
+      ownedCryptos: "getOwnedCryptos",
+      listCoins: "getListCoins"
     })
   },
   methods: {
     ...mapActions({
-      getOwnedCryptosByPlatforme: "getOwnedCryptosByPlatforme"
+      getOwnedCryptosByPlatforme: "getOwnedCryptosByPlatforme",
+      getAllCoins: "getAllCoins"
     })
   }
 })
@@ -76,12 +90,28 @@ class ShowCurrencies extends Vue {
     { text: "Net Benenfit", value: "netBenefit" }
   ];
 
+  loadingCoinGecko = false;
   loadingComponent = false;
 
   async created() {
     this.loadingComponent = true;
     await this.getOwnedCryptosByPlatforme(this.plateforme.code);
     this.loadingComponent = false;
+    await this.getAllCoins();
+  }
+
+  getValueCoinGecko(item) {
+    const coinInGecko = this.listCoins.find(
+      v => v.code === item.crytocurrency.code
+    );
+    item.actualChange = coinInGecko ? coinInGecko.value : null;
+    return coinInGecko ? coinInGecko.value : null;
+  }
+
+  async refreshCoinGecko() {
+    this.loadingCoinGecko = true;
+    await this.getAllCoins();
+    this.loadingCoinGecko = false;
   }
 }
 export default ShowCurrencies;

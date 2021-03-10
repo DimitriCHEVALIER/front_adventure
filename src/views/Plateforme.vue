@@ -99,12 +99,14 @@ import ShowBenefices from "@/components/Crypto/ShowBenefices";
   },
   methods: {
     ...mapActions({
-      getPlateforme: "getPlateforme"
+      getPlateforme: "getPlateforme",
+      getAllCoins: "getAllCoins"
     })
   }
 })
 class Home extends Vue {
   currentComponent = "show-currencies";
+  async created() {}
 }
 export default Home;
 </script>

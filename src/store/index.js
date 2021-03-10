@@ -5,6 +5,7 @@ import plateforme from "./core/plateforme";
 import currency from "./core/currency";
 import order from "./core/order";
 import ownedCrypto from "./core/ownedCrypto";
+import coinGecko from "./core/coinGecko";
 
 Vue.use(Vuex);
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     plateforme,
     currency,
     order,
-    ownedCrypto
+    ownedCrypto,
+    coinGecko
   }
 });
