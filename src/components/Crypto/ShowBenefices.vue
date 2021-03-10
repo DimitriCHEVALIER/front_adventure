@@ -7,7 +7,7 @@
       :headers="headers"
       :items="ownedCryptos"
       class="elevation-1"
-      v-if="ownedCryptos.length > 0 && !loadingComponent"
+      v-if="ownedCryptos.length > 0"
       hide-default-footer
       disable-pagination
     >
@@ -33,16 +33,6 @@
         </div>
       </template>
     </v-data-table>
-    <div v-if="loadingComponent">
-      <div class="center-screen">
-        <v-progress-circular
-          indeterminate
-          :size="70"
-          :width="7"
-          color="primary"
-        ></v-progress-circular>
-      </div>
-    </div>
   </v-container>
 </template>
 
@@ -75,13 +65,8 @@ class ShowCurrencies extends Vue {
     { text: "Multiplication", value: "multi" },
     { text: "Net Benenfit", value: "netBenefit" }
   ];
-
-  loadingComponent = false;
-
-  async created() {
-    this.loadingComponent = true;
-    await this.getOwnedCryptosByPlatforme(this.plateforme.code);
-    this.loadingComponent = false;
+  created() {
+    this.getOwnedCryptosByPlatforme(this.plateforme.code);
   }
 }
 export default ShowCurrencies;

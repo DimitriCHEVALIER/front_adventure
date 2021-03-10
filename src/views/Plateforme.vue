@@ -31,7 +31,7 @@
             <v-divider></v-divider>
 
             <v-list nav dense>
-              <v-list-item @click="currentComponent = 'wallet'">
+              <v-list-item @click="currentComponent = 'show-currencies'">
                 <v-list-item-icon>
                   <v-icon>mdi-folder</v-icon>
                 </v-list-item-icon>
@@ -49,11 +49,17 @@
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter une devise</v-list-item-title>
               </v-list-item>
-              <v-list-item @click="currentComponent = 'show-currencies'">
+              <v-list-item @click="currentComponent = 'sell-in-euro'">
                 <v-list-item-icon>
                   <v-icon>mdi-newspaper</v-icon>
                 </v-list-item-icon>
-                <v-list-item-title>Voir les devises</v-list-item-title>
+                <v-list-item-title>Ajouter une vente</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="currentComponent = 'show-benefices'">
+                <v-list-item-icon>
+                  <v-icon>mdi-newspaper</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Voir les bénéfices</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-navigation-drawer>
@@ -70,19 +76,21 @@
 import Vue from "vue";
 import { mapActions, mapGetters } from "vuex";
 import { Component } from "vue-property-decorator";
-import Wallet from "@/components/Crypto/Wallet";
+import SellInEuro from "@/components/Crypto/SellInEuro";
 import CreateOrder from "@/components/Crypto/CreateOrder";
 import BackLine from "@/components/Actions/BackLine";
 import CreateCurrency from "@/components/Crypto/CreateCurrency";
 import ShowCurrencies from "@/components/Crypto/ShowCurrencies";
+import ShowBenefices from "@/components/Crypto/ShowBenefices";
 
 @Component({
   components: {
-    Wallet,
+    SellInEuro,
     CreateOrder,
     BackLine,
     CreateCurrency,
-    ShowCurrencies
+    ShowCurrencies,
+    ShowBenefices
   },
   computed: {
     ...mapGetters({
@@ -96,7 +104,7 @@ import ShowCurrencies from "@/components/Crypto/ShowCurrencies";
   }
 })
 class Home extends Vue {
-  currentComponent = "wallet";
+  currentComponent = "show-currencies";
 }
 export default Home;
 </script>

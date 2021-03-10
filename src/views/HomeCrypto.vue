@@ -57,8 +57,8 @@ class Home extends Vue {
     this.getAllPlateformes();
   }
 
-  select(value) {
-    this.getPlateforme(value.code);
+  async select(value) {
+    await this.getPlateforme(value.code);
     this.$router.push({ name: "plateforme" });
   }
 }

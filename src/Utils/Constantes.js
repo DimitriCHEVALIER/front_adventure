@@ -5,7 +5,8 @@ export const MESSAGE_ERROR = {
   TIME_WRONG_FORMAT: "Wrong time format",
   ZONE_NUMBER: "This zone has to be number format",
   FILE_WRONG_FORMAT: "Wrong format",
-  SIZE_WRONG_FORMAT: "Wrong size"
+  SIZE_WRONG_FORMAT: "Wrong size",
+  TOO_MANY_TOKEN_SOLD: "You don't owe that many tokens"
 };
 
 export const MOCK_RESULTS = [
