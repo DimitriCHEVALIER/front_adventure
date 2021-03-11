@@ -26,7 +26,7 @@
     >
       <template v-slot:item.ratio="{ item }">
         <div v-if="item.crytocurrency.code !== 'EUR'">
-          {{ item.averageEuroEq / item.amount }}
+          {{ getTauxAchat(item) }}
         </div>
       </template>
       <template v-slot:item.actualChange="{ item }">
@@ -36,12 +36,12 @@
       </template>
       <template v-slot:item.multi="{ item }">
         <div v-if="item.actualChange">
-          {{ item.actualChange / (item.averageEuroEq / item.amount) }}
+          {{ getMultplicateur(item) }}
         </div>
       </template>
       <template v-slot:item.netBenefit="{ item }">
         <div v-if="item.actualChange">
-          {{ item.actualChange * item.amount - item.averageEuroEq }}
+          {{ getNetBenefit(item) }}
         </div>
       </template>
     </v-data-table>
@@ -62,6 +62,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
+import NumberUtils from "@/Utils/NumberUtils";
 
 @Component({
   computed: {
@@ -84,8 +85,8 @@ class ShowCurrencies extends Vue {
     { text: "Coin code", value: "crytocurrency.code" },
     { text: "Value", value: "amount" },
     { text: "Value in Euro", value: "averageEuroEq" },
-    { text: "Bought average (euro)", value: "ratio" },
-    { text: "Insert actual value in euro", value: "actualChange" },
+    { text: "Taux achat (euro)", value: "ratio" },
+    { text: "Taux actuel (euro)", value: "actualChange" },
     { text: "Multiplication", value: "multi" },
     { text: "Net Benenfit", value: "netBenefit" }
   ];
@@ -112,6 +113,22 @@ class ShowCurrencies extends Vue {
     this.loadingCoinGecko = true;
     await this.getAllCoins();
     this.loadingCoinGecko = false;
+  }
+
+  getMultplicateur(item) {
+    return NumberUtils.roundToTwo(
+      item.actualChange / (item.averageEuroEq / item.amount)
+    );
+  }
+
+  getNetBenefit(item) {
+    return NumberUtils.roundToTwo(
+      item.actualChange * item.amount - item.averageEuroEq
+    );
+  }
+
+  getTauxAchat(item) {
+    return NumberUtils.roundToFour(item.averageEuroEq / item.amount);
   }
 }
 export default ShowCurrencies;
