@@ -39,25 +39,25 @@
               </v-list-item>
               <v-list-item @click="currentComponent = 'create-order'">
                 <v-list-item-icon>
-                  <v-icon>mdi-newspaper</v-icon>
+                  <v-icon>mdi-file-document</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter un ordre</v-list-item-title>
               </v-list-item>
               <v-list-item @click="currentComponent = 'create-currency'">
                 <v-list-item-icon>
-                  <v-icon>mdi-newspaper</v-icon>
+                  <v-icon>mdi-currency-btc</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter une devise</v-list-item-title>
               </v-list-item>
               <v-list-item @click="currentComponent = 'sell-in-euro'">
                 <v-list-item-icon>
-                  <v-icon>mdi-newspaper</v-icon>
+                  <v-icon>mdi-send</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Ajouter une vente</v-list-item-title>
               </v-list-item>
               <v-list-item @click="currentComponent = 'show-benefices'">
                 <v-list-item-icon>
-                  <v-icon>mdi-newspaper</v-icon>
+                  <v-icon>mdi-cash</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Voir les bénéfices</v-list-item-title>
               </v-list-item>

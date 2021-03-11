@@ -4,10 +4,10 @@
       Interface de gestion de cryptomonnaies
     </h1>
     <v-row align="center" justify="center">
-      <v-col cols="6" v-if="plateformes.length > 0">
+      <v-col cols="6" v-if="displayedPlateforme.length > 0">
         <v-slide-x-transition appear>
           <v-data-table
-            :items="plateformes"
+            :items="displayedPlateforme"
             :headers="headers"
             @click:row="select"
             class="elevation-1 row-pointer"
@@ -33,6 +33,7 @@
 import Vue from "vue";
 import { mapActions, mapGetters } from "vuex";
 import { Component } from "vue-property-decorator";
+import NumberUtils from "@/Utils/NumberUtils";
 
 @Component({
   computed: {
@@ -55,6 +56,24 @@ class Home extends Vue {
   ];
   created() {
     this.getAllPlateformes();
+  }
+
+  get displayedPlateforme() {
+    const displayedChoicePlateform = this.plateformes;
+    if (displayedChoicePlateform.length === 0) {
+      return [];
+    }
+    if (!displayedChoicePlateform.find(v => v.code === "ALL")) {
+      displayedChoicePlateform.push({
+        code: "ALL",
+        name: "All plateformes",
+        amountInvestment: NumberUtils.getSumFromArray(
+          this.plateformes,
+          "amountInvestment"
+        )
+      });
+    }
+    return displayedChoicePlateform;
   }
 
   async select(value) {

@@ -18,12 +18,14 @@ const ownedCrypto = {
   },
   actions: {
     async getOwnedCryptosByPlatforme({ commit }, codePlateforme) {
-      console.log(codePlateforme);
       const response = await Vue.axios.get(
         "/get_owned_crypto_by_platform/" + codePlateforme
       );
       if (response.status === 200) {
-        commit("SET_OWNED_CRYPTOS", response.data);
+        commit(
+          "SET_OWNED_CRYPTOS",
+          response.data.filter(v => v.crytocurrency.code !== "EUR")
+        );
       }
       return response;
     },
