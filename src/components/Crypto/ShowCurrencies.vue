@@ -45,6 +45,26 @@
         </div>
       </template>
     </v-data-table>
+    <v-row class="mt-4">
+      <v-col cols="2">
+        Total
+      </v-col>
+      <v-col cols="3"> Total investi : {{ totalEuro }} € </v-col>
+      <v-col cols="4">
+        <v-row>
+          <v-col> Total bénéfices virtuels : {{ totalBenefices }} € </v-col>
+        </v-row>
+        <v-row>
+          <v-col> Total impots virtuels : {{ totalImpots }} € </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            Total bénéfices nets virtuels : {{ totalBeneficesNets }} €
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="3"> Multiplicateur moyen : {{ totalMultiplicateur }} </v-col>
+    </v-row>
     <div v-if="loadingComponent">
       <div class="center-screen">
         <v-progress-circular
@@ -94,11 +114,18 @@ class ShowCurrencies extends Vue {
   loadingCoinGecko = false;
   loadingComponent = false;
 
+  totalBenefices = 0;
+  totalEuro = 0;
+  totalMultiplicateur = 0;
+  totalBeneficesNets = 0;
+  totalImpots = 0;
+
   async created() {
     this.loadingComponent = true;
     await this.getOwnedCryptosByPlatforme(this.plateforme.code);
     this.loadingComponent = false;
     await this.getAllCoins();
+    this.getTotalBenefice();
   }
 
   getValueCoinGecko(item) {
@@ -113,6 +140,7 @@ class ShowCurrencies extends Vue {
     this.loadingCoinGecko = true;
     await this.getAllCoins();
     this.loadingCoinGecko = false;
+    this.getTotalBenefice();
   }
 
   getMultplicateur(item) {
@@ -122,13 +150,44 @@ class ShowCurrencies extends Vue {
   }
 
   getNetBenefit(item) {
-    return NumberUtils.roundToTwo(
+    item.netBenefit = NumberUtils.roundToTwo(
       item.actualChange * item.amount - item.averageEuroEq
     );
+    return item.netBenefit;
   }
 
   getTauxAchat(item) {
     return NumberUtils.roundToFour(item.averageEuroEq / item.amount);
+  }
+
+  getTotalEuro() {
+    let total = 0;
+    for (const ownedCrypto of this.ownedCryptos) {
+      if (ownedCrypto.crytocurrency.code !== "EUR") {
+        total += ownedCrypto.averageEuroEq;
+      }
+    }
+    return total;
+  }
+
+  getTotalBenefice() {
+    let totalBenef = 0;
+    let totalEuro = 0;
+    for (const ownedCrypto of this.ownedCryptos) {
+      if (ownedCrypto.crytocurrency.code !== "EUR") {
+        totalEuro = totalEuro + ownedCrypto.averageEuroEq;
+        if (!isNaN(this.getNetBenefit(ownedCrypto))) {
+          totalBenef = totalBenef + ownedCrypto.netBenefit;
+        }
+      }
+    }
+    this.totalBenefices = NumberUtils.roundToTwo(totalBenef);
+    this.totalImpots = NumberUtils.roundToTwo(totalBenef * 0.3);
+    this.totalBeneficesNets = NumberUtils.roundToTwo(totalBenef * 0.7);
+    this.totalEuro = NumberUtils.roundToTwo(totalEuro);
+    this.totalMultiplicateur = NumberUtils.roundToTwo(
+      (this.totalEuro + this.totalBenefices) / this.totalEuro
+    );
   }
 }
 export default ShowCurrencies;
