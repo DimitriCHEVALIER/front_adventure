@@ -48,7 +48,7 @@
         <div
           v-if="item.actualChange"
           v-bind:style="{ 'background-color': getActiveColor(item) }"
-          class="pa-3"
+          class="pa-3 elevation-9"
         >
           {{ getMultplicateur(item) }} %
         </div>
@@ -56,7 +56,7 @@
       <template v-slot:item.netBenefit="{ item }">
         <div
           v-if="item.actualChange"
-          class="pa-3"
+          class="pa-3 elevation-9"
           v-bind:style="{ 'background-color': getActiveColor(item) }"
         >
           {{ getNetBenefit(item) }}
@@ -225,16 +225,16 @@ class ShowCurrencies extends Vue {
   getActiveColor(item) {
     if (this.getMultplicateur(item) > 0) {
       const colorGreenPonderee =
-        this.getMultplicateur(item) > 1000
+        this.getMultplicateur(item) > 400
           ? 255
-          : (this.getMultplicateur(item) / 1000) * 150 + 105;
+          : (this.getMultplicateur(item) / 500) * 150 + 105;
       return "rgb(0, " + colorGreenPonderee + ", 0)";
     }
     const colorRedPonderee =
       255 -
-      (this.getMultplicateur(item) * -1 > 99
+      (this.getMultplicateur(item) * -1 > 80
         ? 255
-        : (this.getMultplicateur(item) / 99) * 150 + 105);
+        : (this.getMultplicateur(item) / 80) * 150 + 105);
     return "rgb(" + colorRedPonderee + ",50, 0)";
   }
 }

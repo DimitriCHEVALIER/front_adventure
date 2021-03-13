@@ -7,7 +7,13 @@ import order from "./core/order";
 import ownedCrypto from "./core/ownedCrypto";
 import coinGecko from "./core/coinGecko";
 
+import VuexPersistence from "vuex-persist";
+
 Vue.use(Vuex);
+const vuexLocal = new VuexPersistence({
+  storage: window.sessionStorage,
+  modules: ["plateforme"]
+});
 
 export default new Vuex.Store({
   modules: {
@@ -17,5 +23,6 @@ export default new Vuex.Store({
     order,
     ownedCrypto,
     coinGecko
-  }
+  },
+  plugins: [vuexLocal.plugin]
 });
