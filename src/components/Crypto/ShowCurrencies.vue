@@ -24,10 +24,11 @@
         :totalImpots="totalImpots"
         :totalBeneficesNets="totalBeneficesNets"
         :totalMultiplicateur="totalMultiplicateur"
+        v-show="ownedCryptos.length > 0 && !loadingComponent"
       >
       </show-resume-benefices>
       <v-data-table
-        key="v-data-table"
+        :key="keyDataTable"
         :headers="headers"
         :items="ownedCryptos"
         class="elevation-15 mt-4"
@@ -61,7 +62,7 @@
             v-bind:style="{ 'background-color': getActiveColor(item) }"
             class="pa-3 elevation-9"
           >
-            {{ getMultplicateur(item) }} %
+            {{ item.multi }} %
           </div>
         </template>
         <template v-slot:item.netBenefit="{ item }">
@@ -70,8 +71,17 @@
             class="pa-3 elevation-9"
             v-bind:style="{ 'background-color': getActiveColor(item) }"
           >
-            {{ getNetBenefit(item) }}
+            {{ item.netBenefit }}
           </div>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <v-btn
+            color="text-transform-none"
+            class="my-2 text-transform-none"
+            @click="displayDialogGraph(item)"
+          >
+            <v-icon>mdi-chart-line</v-icon>
+          </v-btn>
         </template>
       </v-data-table>
     </v-slide-x-transition>
@@ -85,6 +95,15 @@
         ></v-progress-circular>
       </div>
     </div>
+    <dialog-graph
+      :key="keyLineChart"
+      v-if="displayGraph"
+      :labels="labels"
+      :datasets="datasets"
+      :dialogGraph.sync="displayGraph"
+      :imgCoinGraphed="imgCoinGraphed"
+    >
+    </dialog-graph>
   </v-container>
 </template>
 
@@ -94,9 +113,11 @@ import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import NumberUtils from "@/Utils/NumberUtils";
 import ShowResumeBenefices from "@/components/Crypto/ShowResumeBenefices";
+import DialogGraph from "@/components/Charts/DialogGraph";
+import moment from "moment";
 
 @Component({
-  components: { ShowResumeBenefices },
+  components: { ShowResumeBenefices, DialogGraph },
   computed: {
     ...mapGetters({
       plateforme: "getPlateforme",
@@ -120,7 +141,19 @@ class ShowCurrencies extends Vue {
     { text: "Taux achat (euro)", value: "ratio" },
     { text: "Taux actuel (euro)", value: "actualChange" },
     { text: "Multiplication", value: "multi" },
-    { text: "Net Benenfit", value: "netBenefit" }
+    { text: "Net Benenfit", value: "netBenefit" },
+    { text: "Show graph", value: "action" }
+  ];
+
+  labels = [];
+  datasets = [
+    {
+      label: "Graph",
+      data: [],
+      backgroundColor: "transparent",
+      borderColor: "rgba(1, 116, 188, 0.50)",
+      pointBackgroundColor: "rgba(171, 71, 188, 1)"
+    }
   ];
 
   loadingCoinGecko = false;
@@ -131,6 +164,10 @@ class ShowCurrencies extends Vue {
   totalMultiplicateur = 0;
   totalBeneficesNets = 0;
   totalImpots = 0;
+  displayGraph = false;
+  keyLineChart = 0;
+  keyDataTable = 0;
+  imgCoinGraphed = null;
 
   async created() {
     if (this.plateforme.code === "ALL") {
@@ -138,9 +175,9 @@ class ShowCurrencies extends Vue {
     }
     this.loadingComponent = true;
     await this.getOwnedCryptosByPlatforme(this.plateforme.code);
-    this.loadingComponent = false;
     await this.getAllCoins();
     this.getTotalBenefice();
+    this.loadingComponent = false;
   }
 
   getRoundedValue(value, isLong) {
@@ -200,6 +237,8 @@ class ShowCurrencies extends Vue {
         totalEuro = totalEuro + ownedCrypto.averageEuroEq;
         if (!isNaN(this.getNetBenefit(ownedCrypto))) {
           totalBenef = totalBenef + ownedCrypto.netBenefit;
+          ownedCrypto.multi = this.getMultplicateur(ownedCrypto);
+          ownedCrypto.netBenefit = this.getNetBenefit(ownedCrypto);
         }
       }
     }
@@ -210,6 +249,7 @@ class ShowCurrencies extends Vue {
     this.totalMultiplicateur = NumberUtils.roundToTwo(
       (this.totalEuro + this.totalBenefices) / this.totalEuro
     );
+    this.keyDataTable++;
   }
 
   getActiveColor(item) {
@@ -226,6 +266,28 @@ class ShowCurrencies extends Vue {
         ? 255
         : (this.getMultplicateur(item) / 80) * 150 + 105);
     return "rgb(" + colorRedPonderee + ",50, 0)";
+  }
+
+  displayDialogGraph(item) {
+    const coin = this.listCoins.find(v => v.code === item.crytocurrency.code);
+    console.log(coin);
+    this.buildLabels(coin.dateDebutChart, coin.sparklingLastWeek);
+    this.datasets[0].data = coin.sparklingLastWeek;
+    this.datasets[0].label = item.crytocurrency.name;
+    this.imgCoinGraphed = coin.imgSrc;
+    console.log(this.imgCoinGraphed);
+    this.displayGraph = true;
+    this.keyLineChart++;
+  }
+
+  buildLabels(dateOrigine, array) {
+    this.labels = [];
+    let date = moment(dateOrigine).subtract(7, "d");
+    // eslint-disable-next-line no-unused-vars
+    for (const hourlyValue of array) {
+      this.labels.push(date.format("DD/MM HH") + "h");
+      date = moment(date).add(1, "hour");
+    }
   }
 }
 export default ShowCurrencies;

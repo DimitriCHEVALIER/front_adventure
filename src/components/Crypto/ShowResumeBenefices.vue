@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    class="pa-5 elevation-7 mt-4"
-    v-show="ownedCryptos.length > 0 && !loadingComponent"
-  >
+  <v-card class="pa-5 elevation-7 mt-4">
     <v-row>
       <v-col cols="3"> Total investi : {{ totalEuro }} € </v-col>
       <v-col cols="5">

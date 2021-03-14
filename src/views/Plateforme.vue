@@ -64,7 +64,7 @@
             </v-list>
           </v-navigation-drawer>
         </div>
-        <div class="float-left pa-3" style="width: 72%">
+        <div class="float-left pa-3" style="width: 82%">
           <component v-bind:is="currentComponent" />
         </div>
       </v-row>
