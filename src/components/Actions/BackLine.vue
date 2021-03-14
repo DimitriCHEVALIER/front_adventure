@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row class="line-back">
       <v-col cols="1">
         <v-btn text class="" @click="back">

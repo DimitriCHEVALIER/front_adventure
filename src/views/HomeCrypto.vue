@@ -1,5 +1,10 @@
 <template>
-  <v-container class="home">
+  <v-container fluid class="home">
+    <v-progress-linear
+      v-if="loaderTop"
+      indeterminate
+      color="primary"
+    ></v-progress-linear>
     <h1>
       Interface de gestion de cryptomonnaies
     </h1>
@@ -54,6 +59,9 @@ class Home extends Vue {
     { text: "Token", value: "code" },
     { text: "Valeure investissement", value: "amountInvestment" }
   ];
+
+  loaderTop = false;
+
   created() {
     this.getAllPlateformes();
   }
@@ -77,7 +85,9 @@ class Home extends Vue {
   }
 
   async select(value) {
+    this.loaderTop = true;
     await this.getPlateforme(value.code);
+    this.loaderTop = false;
     this.$router.push({ name: "plateforme" });
   }
 }

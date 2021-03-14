@@ -16,77 +16,65 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-data-table
-      :headers="headers"
-      :items="ownedCryptos"
-      class="elevation-15 mt-4"
-      v-if="ownedCryptos.length > 0 && !loadingComponent"
-      hide-default-footer
-      disable-pagination
-    >
-      <template v-slot:item.amount="{ item }">
-        <div>
-          {{ getRoundedValue(item.amount, true) }}
-        </div>
-      </template>
-      <template v-slot:item.averageEuroEq="{ item }">
-        <div>
-          {{ getRoundedValue(item.averageEuroEq, false) }}
-        </div>
-      </template>
-      <template v-slot:item.ratio="{ item }">
-        <div v-if="item.crytocurrency.code !== 'EUR'">
-          {{ getTauxAchat(item) }}
-        </div>
-      </template>
-      <template v-slot:item.actualChange="{ item }">
-        <div>
-          {{ getValueCoinGecko(item) }}
-        </div>
-      </template>
-      <template v-slot:item.multi="{ item }">
-        <div
-          v-if="item.actualChange"
-          v-bind:style="{ 'background-color': getActiveColor(item) }"
-          class="pa-3 elevation-9"
-        >
-          {{ getMultplicateur(item) }} %
-        </div>
-      </template>
-      <template v-slot:item.netBenefit="{ item }">
-        <div
-          v-if="item.actualChange"
-          class="pa-3 elevation-9"
-          v-bind:style="{ 'background-color': getActiveColor(item) }"
-        >
-          {{ getNetBenefit(item) }}
-        </div>
-      </template>
-    </v-data-table>
-    <v-card
-      class="pa-5 elevation-15 mt-10"
-      v-if="ownedCryptos.length > 0 && !loadingComponent"
-    >
-      <v-row class="mt-4">
-        <v-col cols="3"> Total investi : {{ totalEuro }} € </v-col>
-        <v-col cols="5">
-          <v-row>
-            <v-col> Total bénéfices virtuels : {{ totalBenefices }} € </v-col>
-          </v-row>
-          <v-row>
-            <v-col> Total impots virtuels : {{ totalImpots }} € </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              Total bénéfices nets virtuels : {{ totalBeneficesNets }} €
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col cols="3">
-          Multiplicateur moyen : {{ totalMultiplicateur }}
-        </v-col>
-      </v-row>
-    </v-card>
+    <v-slide-x-transition appear group>
+      <show-resume-benefices
+        key="v-card"
+        :totalEuro="totalEuro"
+        :totalBenefices="totalBenefices"
+        :totalImpots="totalImpots"
+        :totalBeneficesNets="totalBeneficesNets"
+        :totalMultiplicateur="totalMultiplicateur"
+      >
+      </show-resume-benefices>
+      <v-data-table
+        key="v-data-table"
+        :headers="headers"
+        :items="ownedCryptos"
+        class="elevation-15 mt-4"
+        v-show="ownedCryptos.length > 0 && !loadingComponent"
+        hide-default-footer
+        disable-pagination
+      >
+        <template v-slot:item.amount="{ item }">
+          <div>
+            {{ getRoundedValue(item.amount, true) }}
+          </div>
+        </template>
+        <template v-slot:item.averageEuroEq="{ item }">
+          <div>
+            {{ getRoundedValue(item.averageEuroEq, false) }}
+          </div>
+        </template>
+        <template v-slot:item.ratio="{ item }">
+          <div v-if="item.crytocurrency.code !== 'EUR'">
+            {{ getTauxAchat(item) }}
+          </div>
+        </template>
+        <template v-slot:item.actualChange="{ item }">
+          <div>
+            {{ getValueCoinGecko(item) }}
+          </div>
+        </template>
+        <template v-slot:item.multi="{ item }">
+          <div
+            v-if="item.actualChange"
+            v-bind:style="{ 'background-color': getActiveColor(item) }"
+            class="pa-3 elevation-9"
+          >
+            {{ getMultplicateur(item) }} %
+          </div>
+        </template>
+        <template v-slot:item.netBenefit="{ item }">
+          <div
+            v-if="item.actualChange"
+            class="pa-3 elevation-9"
+            v-bind:style="{ 'background-color': getActiveColor(item) }"
+          >
+            {{ getNetBenefit(item) }}
+          </div>
+        </template>
+      </v-data-table>
+    </v-slide-x-transition>
     <div v-if="loadingComponent">
       <div class="center-screen">
         <v-progress-circular
@@ -105,8 +93,10 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { mapActions, mapGetters } from "vuex";
 import NumberUtils from "@/Utils/NumberUtils";
+import ShowResumeBenefices from "@/components/Crypto/ShowResumeBenefices";
 
 @Component({
+  components: { ShowResumeBenefices },
   computed: {
     ...mapGetters({
       plateforme: "getPlateforme",

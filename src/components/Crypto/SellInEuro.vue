@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-form ref="formSellEuroOrder" v-model="sellEuroForm" lazy-validation>
       <v-row>
         <v-col cols="2">
