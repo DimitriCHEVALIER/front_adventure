@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import dataFile from "./core/dataFile";
 import plateforme from "./core/plateforme";
 import currency from "./core/currency";
 import order from "./core/order";
@@ -17,7 +16,6 @@ const vuexLocal = new VuexPersistence({
 
 export default new Vuex.Store({
   modules: {
-    dataFile,
     plateforme,
     currency,
     order,
