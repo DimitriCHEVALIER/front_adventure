@@ -18,7 +18,10 @@
     </v-row>
     <v-slide-x-transition appear group>
       <show-resume-benefices
-        key="v-card"
+        v-if="
+          updateKeyResume > 0 && ownedCryptos.length > 0 && listCoins.length > 0
+        "
+        :key="'v-card' + updateKeyResume"
         :totalEuro="totalEuro"
         :totalBenefices="totalBenefices"
         :totalImpots="totalImpots"
@@ -168,6 +171,7 @@ class ShowCurrencies extends Vue {
   keyLineChart = 0;
   keyDataTable = 0;
   imgCoinGraphed = null;
+  updateKeyResume = 0;
 
   async created() {
     if (this.plateforme.code === "ALL") {
@@ -178,6 +182,11 @@ class ShowCurrencies extends Vue {
     await this.getAllCoins();
     this.getTotalBenefice();
     this.loadingComponent = false;
+    this.updateKeyResume++;
+  }
+
+  mounted() {
+    this.updateKeyResume++;
   }
 
   getRoundedValue(value, isLong) {

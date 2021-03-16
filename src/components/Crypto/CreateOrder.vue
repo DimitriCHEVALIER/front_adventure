@@ -3,7 +3,22 @@
     <h1>
       Ajouter un ordre
     </h1>
-    <v-form ref="formAddOrder" v-model="orderForm" lazy-validation>
+    <div v-if="loadingComponent">
+      <div class="center-screen">
+        <v-progress-circular
+          indeterminate
+          :size="70"
+          :width="7"
+          color="primary"
+        ></v-progress-circular>
+      </div>
+    </div>
+    <v-form
+      v-if="!loadingComponent"
+      ref="formAddOrder"
+      v-model="orderForm"
+      lazy-validation
+    >
       <v-row>
         <v-col cols="2">
           <v-autocomplete
@@ -13,6 +28,7 @@
             item-text="name"
             item-value="code"
             v-model="order.selectedPlateforme"
+            :disabled="disableChoiceReferentiel"
           >
           </v-autocomplete>
         </v-col>
@@ -103,6 +119,7 @@ import JsonUtils from "@/Utils/JsonUtils";
 @Component({
   computed: {
     ...mapGetters({
+      plateforme: "getPlateforme",
       plateformeReferentiel: "getPlateformeReferentiels",
       currenciesReferentiel: "getCurrenciesReferentiel"
     })
@@ -125,6 +142,8 @@ class CreateOrder extends Vue {
   };
   orderForm = true;
   loading = false;
+  loadingComponent = false;
+  disableChoiceReferentiel = false;
 
   rules = {
     required: value => !!value || MESSAGE_ERROR.ZONE_MANDATORY,
@@ -135,9 +154,12 @@ class CreateOrder extends Vue {
       MESSAGE_ERROR.ZONE_NUMBER
   };
 
-  created() {
-    this.getPlateformesReferentiels();
-    this.getReferentielCurrencies();
+  async created() {
+    this.loadingComponent = true;
+    await this.getPlateformesReferentiels();
+    await this.getReferentielCurrencies();
+    this.loadingComponent = false;
+    this.autofillPlateforme();
   }
 
   get taux() {
@@ -145,6 +167,16 @@ class CreateOrder extends Vue {
       return this.order.amountFistCurrency / this.order.amountFinalCurrency;
     }
     return "";
+  }
+
+  autofillPlateforme() {
+    const autofillValue = this.plateformeReferentiel.find(
+      v => v.code === this.plateforme.code
+    );
+    if (autofillValue) {
+      this.order.selectedPlateforme = autofillValue;
+      this.disableChoiceReferentiel = true;
+    }
   }
 
   async addOrder() {
