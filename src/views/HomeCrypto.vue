@@ -57,7 +57,7 @@ class Home extends Vue {
   headers = [
     { text: "Nom de plateforme", value: "name" },
     { text: "Token", value: "code" },
-    { text: "Valeure investissement", value: "amountInvestment" }
+    { text: "Valeur investissement", value: "amountInvestment" }
   ];
 
   loaderTop = false;

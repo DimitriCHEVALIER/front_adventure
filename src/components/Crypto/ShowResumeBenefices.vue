@@ -21,7 +21,14 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="3"> Total investi : {{ totalEuro }} € </v-col>
+      <v-col cols="3">
+        <v-row>
+          <v-col> Total investi : {{ totalEuro }} € </v-col>
+        </v-row>
+        <v-row>
+          <v-col> Total virtuel : {{ totalEuro + totalBenefices }} € </v-col>
+        </v-row>
+      </v-col>
       <v-col cols="5">
         <v-row>
           <v-col> Total bénéfices virtuels : {{ totalBenefices }} € </v-col>
@@ -71,16 +78,14 @@ class ShowResumeBenefices extends Vue {
   keyPieChart = 0;
 
   mounted() {
-    this.datasetsOrigin[0].data = this.ownedCryptos.map(v => v.averageEuroEq);
-    this.datasetsActual[0].data = this.ownedCryptos.map(
-      v => v.amount * this.getValueCoinGecko(v)
-    );
-    this.datasetsOrigin[0].backgroundColor = this.ownedCryptos.map(() =>
+    const dataMap = this.getDataMap();
+    this.datasetsOrigin[0].data = dataMap.map(v => v.averageEuroEq);
+    this.datasetsActual[0].data = dataMap.map(v => v.actualValueOwnedCoin);
+    this.datasetsOrigin[0].backgroundColor = dataMap.map(() =>
       NumberUtils.randomRgba()
     );
     this.datasetsActual[0].backgroundColor = this.datasetsOrigin[0].backgroundColor;
-    console.log(this.ownedCryptos);
-    this.labels = this.ownedCryptos.map(v => v.crytocurrency.code);
+    this.labels = dataMap.map(v => v.crytocurrency.code);
     this.keyPieChart++;
   }
 
@@ -90,6 +95,33 @@ class ShowResumeBenefices extends Vue {
     );
     item.actualChange = coinInGecko ? coinInGecko.value : null;
     return coinInGecko ? coinInGecko.value : null;
+  }
+
+  getDataMap() {
+    let chartArray = [];
+    let others = {
+      actualValueOwnedCoin: 0,
+      averageEuroEq: 0,
+      crytocurrency: {
+        code: "Autres"
+      }
+    };
+    const totalOwnedInEuro = this.totalEuro + this.totalBenefices;
+    for (const crypto of this.ownedCryptos) {
+      const valueOwnedCoin = crypto.amount * this.getValueCoinGecko(crypto);
+      if (
+        crypto.averageEuroEq / this.totalEuro > 0.02 ||
+        valueOwnedCoin / totalOwnedInEuro > 0.02
+      ) {
+        crypto.actualValueOwnedCoin = valueOwnedCoin;
+        chartArray.push(crypto);
+      } else {
+        others.actualValueOwnedCoin += valueOwnedCoin;
+        others.averageEuroEq += crypto.averageEuroEq;
+      }
+    }
+    chartArray.push(others);
+    return chartArray;
   }
 }
 export default ShowResumeBenefices;

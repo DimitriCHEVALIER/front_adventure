@@ -30,14 +30,12 @@ const plateforme = {
     async getPlateforme({ commit }, code) {
       const response = await Vue.axios.get("/get_plateforme/" + code);
       commit("SET_PLATEFORME", response.data);
-      console.log(response.data);
       return response;
     },
 
     async getPlateformesReferentiels({ commit }) {
       const response = await Vue.axios.get("/get_plateformes_referentiels/");
       commit("SET_PLATEFORMES_REFERENTIELS", response.data);
-      console.log(response);
       return response;
     }
   },

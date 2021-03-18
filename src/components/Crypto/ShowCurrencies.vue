@@ -39,6 +39,20 @@
         hide-default-footer
         disable-pagination
       >
+        <template v-slot:item.image="{ item }">
+          <v-img max-height="30" max-width="30" :src="item.logo" contain>
+          </v-img>
+        </template>
+        <template v-slot:item.designation="{ item }">
+          <div>
+            <v-row class="font-weight-bold">
+              {{ item.crytocurrency.name }}
+            </v-row>
+            <v-row class="font-italic">
+              {{ item.crytocurrency.code }}
+            </v-row>
+          </div>
+        </template>
         <template v-slot:item.amount="{ item }">
           <div>
             {{ getRoundedValue(item.amount, true) }}
@@ -56,13 +70,15 @@
         </template>
         <template v-slot:item.actualChange="{ item }">
           <div>
-            {{ getValueCoinGecko(item) }}
+            {{ getValueCoinGecko(item, "value") }}
           </div>
         </template>
         <template v-slot:item.multi="{ item }">
           <div
             v-if="item.actualChange"
-            v-bind:style="{ 'background-color': getActiveColor(item) }"
+            v-bind:style="{
+              'background-color': getActiveColor(getMultplicateur(item))
+            }"
             class="pa-3 elevation-9"
           >
             {{ item.multi }} %
@@ -72,7 +88,9 @@
           <div
             v-if="item.actualChange"
             class="pa-3 elevation-9"
-            v-bind:style="{ 'background-color': getActiveColor(item) }"
+            v-bind:style="{
+              'background-color': getActiveColor(getMultplicateur(item))
+            }"
           >
             {{ item.netBenefit }}
           </div>
@@ -85,6 +103,22 @@
           >
             <v-icon>mdi-chart-line</v-icon>
           </v-btn>
+        </template>
+
+        <template v-slot:item.percentageVariation24h="{ item }">
+          <div
+            v-if="item.actualChange"
+            class="pa-3 elevation-9"
+            v-bind:style="{
+              'background-color': getActiveColor(
+                getValueCoinGecko(item, 'percentageVariation24h'),
+                15,
+                15
+              )
+            }"
+          >
+            {{ item.percentageVariation24h }}%
+          </div>
         </template>
       </v-data-table>
     </v-slide-x-transition>
@@ -137,15 +171,16 @@ import moment from "moment";
 })
 class ShowCurrencies extends Vue {
   headers = [
-    { text: "Coin", value: "crytocurrency.name" },
-    { text: "Coin code", value: "crytocurrency.code" },
+    { text: "Logo", value: "image" },
+    { text: "Coin", value: "designation" },
     { text: "Value", value: "amount" },
     { text: "Value in Euro", value: "averageEuroEq" },
     { text: "Taux achat (euro)", value: "ratio" },
     { text: "Taux actuel (euro)", value: "actualChange" },
     { text: "Multiplication", value: "multi" },
     { text: "Net Benenfit", value: "netBenefit" },
-    { text: "Show graph", value: "action" }
+    { text: "Show graph", value: "action" },
+    { text: "Last 24h", value: "percentageVariation24h" }
   ];
 
   labels = [];
@@ -196,12 +231,12 @@ class ShowCurrencies extends Vue {
     return NumberUtils.roundToTwo(value);
   }
 
-  getValueCoinGecko(item) {
+  getValueCoinGecko(item, attribute) {
     const coinInGecko = this.listCoins.find(
       v => v.code === item.crytocurrency.code
     );
     item.actualChange = coinInGecko ? coinInGecko.value : null;
-    return coinInGecko ? coinInGecko.value : null;
+    return coinInGecko ? coinInGecko[attribute] : null;
   }
 
   async refreshCoinGecko() {
@@ -248,6 +283,11 @@ class ShowCurrencies extends Vue {
           totalBenef = totalBenef + ownedCrypto.netBenefit;
           ownedCrypto.multi = this.getMultplicateur(ownedCrypto);
           ownedCrypto.netBenefit = this.getNetBenefit(ownedCrypto);
+          ownedCrypto.percentageVariation24h = this.getRoundedValue(
+            this.getValueCoinGecko(ownedCrypto, "percentageVariation24h"),
+            false
+          );
+          ownedCrypto.logo = this.getValueCoinGecko(ownedCrypto, "imgSrc");
         }
       }
     }
@@ -261,30 +301,20 @@ class ShowCurrencies extends Vue {
     this.keyDataTable++;
   }
 
-  getActiveColor(item) {
-    if (this.getMultplicateur(item) > 0) {
-      const colorGreenPonderee =
-        this.getMultplicateur(item) > 400
-          ? 255
-          : (this.getMultplicateur(item) / 500) * 150 + 105;
-      return "rgb(0, " + colorGreenPonderee + ", 0)";
-    }
-    const colorRedPonderee =
-      255 -
-      (this.getMultplicateur(item) * -1 > 80
-        ? 255
-        : (this.getMultplicateur(item) / 80) * 150 + 105);
-    return "rgb(" + colorRedPonderee + ",50, 0)";
+  getActiveColor(item, positiveSensibility = 400, negativeSensibility = 80) {
+    return NumberUtils.getColor(
+      NumberUtils.roundToTwo(item),
+      positiveSensibility,
+      negativeSensibility
+    );
   }
 
   displayDialogGraph(item) {
     const coin = this.listCoins.find(v => v.code === item.crytocurrency.code);
-    console.log(coin);
     this.buildLabels(coin.dateDebutChart, coin.sparklingLastWeek);
     this.datasets[0].data = coin.sparklingLastWeek;
     this.datasets[0].label = item.crytocurrency.name;
     this.imgCoinGraphed = coin.imgSrc;
-    console.log(this.imgCoinGraphed);
     this.displayGraph = true;
     this.keyLineChart++;
   }

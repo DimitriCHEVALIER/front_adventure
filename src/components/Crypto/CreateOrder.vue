@@ -114,7 +114,6 @@ import { mapActions, mapGetters } from "vuex";
 import { MESSAGE_ERROR } from "@/Utils/Constantes";
 import { REGEX_PATTERN } from "@/Utils/regex";
 import { EventBus } from "@/eventBus";
-import JsonUtils from "@/Utils/JsonUtils";
 
 @Component({
   computed: {
@@ -182,7 +181,6 @@ class CreateOrder extends Vue {
   async addOrder() {
     this.loading = true;
     if (this.$refs.formAddOrder.validate()) {
-      console.log(JsonUtils.clone(this.order));
       const response = await this.createOrder(this.order);
       if (response && response.status === 200) {
         EventBus.$emit("showSnackBar", {

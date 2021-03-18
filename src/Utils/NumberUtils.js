@@ -32,5 +32,21 @@ class NumberUtils {
       ")"
     );
   }
+
+  static getColor(value, positiveSensibility = 400, negativeSensibility = 80) {
+    if (value > 0) {
+      const colorGreenPonderee =
+        value > positiveSensibility
+          ? 255
+          : (value / positiveSensibility) * 150 + 105;
+      return "rgb(0, " + colorGreenPonderee + ", 0)";
+    }
+    const colorRedPonderee =
+      255 -
+      (value * -1 > negativeSensibility
+        ? 255
+        : (value / negativeSensibility) * 150 + 105);
+    return "rgb(" + colorRedPonderee + ",50, 0)";
+  }
 }
 export default NumberUtils;
